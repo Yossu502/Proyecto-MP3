@@ -92,8 +92,7 @@ public class Registro {
                 "\nNombre Cancion: "+NombreCancion+
                 "\nAlbum: "+Album+
                 "\nAño Del Album: "+AñoAlbum+
-                "\nComentario: "+Comentario;
+                "\nComentario: "+Comentario+
+                "\nGenero: "+Genero;
     }
-    
-    
 }

@@ -9,7 +9,20 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Proyecto {  
-   
+    private final Archivo archivo;
+    private static final String nombreArchivo ="canciones.data";
+
+    
+    public Proyecto() throws IOException, FileNotFoundException, ArchivoNoValidoException {
+        archivo = new Archivo(nombreArchivo);
+    }
+    
+    public void agregarDatos(String A, String G, String NC, String AL, String ALL, String Com, String Gen) throws IOException{
+        archivo.agregarRegistro(
+                new Registro(A, G, NC, AL, ALL, Com, Gen));
+        archivo.escribirDatos();
+    }
+    
     public String tag(String tag){
         if("TALB".equals(tag)){
             
@@ -47,35 +60,21 @@ public class Proyecto {
         }  
     }
     
- 
+    public void MeterAArrayList(String A, String G, String NC, String AL, String ALL, String Com, String Gen){
+  
     
-//    public void EnviarDatos(String tag, String InfoCancion) throws IOException{
-//        if("TPE1".equals(tag)){
-//            NuevoRegistro.setArtista(InfoCancion);
-//            //Artista
-//        } else if("TIT2".equals(tag)){
-//            NuevoRegistro.setNombreCancion(InfoCancion);
-//            //Nombre de la canción:
-//        }else if("TPE2".equals(tag)){
-//            NuevoRegistro.setGrupo(InfoCancion);
-//           //Grupo
-//        }else if("TCON".equals(tag)){
-//            NuevoRegistro.setGenero(InfoCancion);
-//            //Genero
-//        }else if("TALB".equals(tag)){
-//            NuevoRegistro.setAlbum(InfoCancion);
-//           //Álbum
-//        }else if("TYER".equals(tag)){
-//            NuevoRegistro.setAñoAlbum(InfoCancion);
-//            //Año del álbum
-//        }else if("COMM".equals(tag)){
-//            NuevoRegistro.setComentario(InfoCancion);
-//            //Comentario
-//        }
-//       
-//    }
-    
+    }
+     
     public void listarFicherosPorCarpeta(final File carpeta) throws FileNotFoundException, IOException  {
+        String Artista, Grupo, NombreCancion, Album, AñoAlbum, Comentario, Genero;
+        Artista = new String();
+        Grupo = new String();
+        NombreCancion = new String();
+        Album = new String();
+        AñoAlbum = new String();
+        Comentario = new String();
+        Genero = new String();
+        
         ArrayList <String> Informacion = new ArrayList<>();
         for(final File ficheroEntrada : carpeta.listFiles()) {
             if (ficheroEntrada.isDirectory()) {
@@ -83,6 +82,7 @@ public class Proyecto {
             } else {
                  if (ficheroEntrada.getName().endsWith(".mp3") || ficheroEntrada.getName().endsWith(".MP3"))
                     {
+                        //
                         short pos=3; int totalTS;
                         RandomAccessFile archivo = new RandomAccessFile(ficheroEntrada, "r");
                         archivo.seek(pos);
@@ -118,23 +118,37 @@ public class Proyecto {
                                 byte[] info = new byte[tagSize];
                                 archivo.read(info);
                                 String cadena = new String(info);
-//                              EnviarDatos(tagg, cadena);
                                 System.out.println(cadena);
+                                if ("TPE1".equals(tagg)){
+                                    Artista = cadena;
+                                }else if ("TPE2".equals(tagg)){
+                                    Grupo = cadena;
+                                }else if ("TIT2".equals(tagg)){
+                                    NombreCancion = cadena;
+                                }else if ("TALB".equals(tagg)){
+                                    Album = cadena;
+                                }else if ("TYER".equals(tagg)){
+                                    AñoAlbum = cadena;
+                                }else if ("COMM".equals(tagg)){
+                                    Comentario = cadena;
+                                } else if ("TCON".equals(tagg)){
+                                    Genero = cadena;
+                                }
                             }
                             pos=(short) (pos+10+tagSize);
                         }
                         archivo.close();
-
+                        agregarDatos(Artista, Grupo, NombreCancion, Album, AñoAlbum, Comentario, Genero);
                         System.out.println("\n");
                     }   
             }
         } 
     }
      
-    public static void main(String[] args) throws FileNotFoundException, ArchivoNoValidoException {
+    public static void main(String[] args) throws FileNotFoundException, ArchivoNoValidoException, IOException {
+        Proyecto mp3 = new Proyecto();
         try { 
-            Proyecto mp3 = new Proyecto();
-            String files;
+           
             String ruta = System.getProperty("user.dir");
             File folder = new File(ruta);
             mp3.listarFicherosPorCarpeta(folder);
